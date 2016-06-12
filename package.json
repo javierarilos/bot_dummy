@@ -13,5 +13,13 @@
   "dependencies": {
     "botbuilder": "^1.0.1",
     "restify": "^4.1.0"
-  }
+  },
+  "engines": {
+    "node": ">= 0.6.0",
+    "npm": ">= 1.0.0"
+  },
+  "devDependencies": {},
+  "bundleDependencies": [],
+  "private": true,
+  "main": "start.js"
 }
