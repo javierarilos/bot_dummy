@@ -5,7 +5,8 @@
   "private": true,
   "main": "start.js",
   "scripts": {
-    "start": "node --use_strict start.js"
+    "start": "node start.js",
+    "XXXYZ": "node --use_strict start.js"
   },
   "author": "javierarilos",
   "license": "APACHE 2.0",
