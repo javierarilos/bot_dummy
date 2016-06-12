@@ -14,6 +14,9 @@ server.get('/health', function (req, res, next) {
   res.send('health OK.');
   next();
 })
-server.listen(process.env.port || 3978, function () {
+
+let port = process.env.NODE_PORT || 3000
+let ip = process.env.NODE_IP || '0.0.0.0'
+server.listen(port, ip, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
