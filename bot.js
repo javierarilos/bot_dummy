@@ -20,8 +20,8 @@ server.get('/', function (req, res, next) {
 });
 
 // Start server
-let port = process.env.NODE_PORT || 3000
-let ip = process.env.NODE_IP || '0.0.0.0'
+var port = process.env.NODE_PORT || 3000
+var ip = process.env.NODE_IP || '0.0.0.0'
 server.listen(port, ip, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
