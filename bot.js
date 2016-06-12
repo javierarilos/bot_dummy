@@ -14,6 +14,12 @@ server.get('/health', function (req, res, next) {
   res.send('health OK.');
   next();
 });
+server.get('/chat', function (req, res, next) {
+  res.setHeader('Content-Type', 'text/html');
+  //res.contentType = 'text/html';
+  res.end("<html><title>x</title><iframe  width='500' height='400' src='https://webchat.botframework.com/embed/AAAA-ZZZZ-1111-9999-bbbb-yyyy-2222-7777?s=mb5BZTQ1sSI.cwA.1L8.eAP0nXGGFc4IuY6Uvr_U1Dotyiju7p2u5LrTLeeZzOw'></iframe></html>");
+  next();
+});
 server.get('/', function (req, res, next) {
   res.send('hello there!!!!!!');
   next();
