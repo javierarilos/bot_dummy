@@ -20,8 +20,17 @@ server.get('/', function (req, res, next) {
 });
 
 // Start server
-var port = process.env.NODE_PORT || 3000
-var ip = process.env.NODE_IP || '0.0.0.0'
+var port = process.env.OPENSHIFT_NODEJS_PORT || 3000
+var ip = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
+
+
+if (typeof self.ipaddress === "undefined") {
+    //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
+    //  allows us to run/test the app locally.
+    console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
+    self.ipaddress = "127.0.0.1";
+};
+
 server.listen(port, ip, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
