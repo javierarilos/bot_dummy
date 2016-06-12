@@ -13,8 +13,13 @@ server.post('/api/messages', bot.verifyBotFramework(), bot.listen());
 server.get('/health', function (req, res, next) {
   res.send('health OK.');
   next();
-})
+});
+server.get('/', function (req, res, next) {
+  res.send('hello there!!!!!!');
+  next();
+});
 
+// Start server
 let port = process.env.NODE_PORT || 3000
 let ip = process.env.NODE_IP || '0.0.0.0'
 server.listen(port, ip, function () {
