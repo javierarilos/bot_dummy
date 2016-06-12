@@ -1,12 +1,12 @@
 {
-  "name": "bot_dummy",
+  "name": "bot",
   "version": "0.0.1",
   "description": "Sample BOT application with Node, MS Bot Framework and Openshift.",
   "private": true,
-  "main": "start.js",
+  "main": "bot.js",
   "scripts": {
-    "start": "node start.js",
-    "XXXYZ": "node --use_strict start.js"
+    "start": "node bot.js",
+    "start-strict": "node --use_strict bot.js"
   },
   "author": "javierarilos",
   "license": "APACHE 2.0",
@@ -14,12 +14,7 @@
     "botbuilder": "^1.0.1",
     "restify": "^4.1.0"
   },
-  "engines": {
-    "node": ">= 0.6.0",
-    "npm": ">= 1.0.0"
-  },
   "devDependencies": {},
   "bundleDependencies": [],
-  "private": true,
-  "main": "start.js"
+  "private": true
 }
