@@ -13,7 +13,7 @@ function getBot() {
 var bot = getBot();
 
 bot.add('/', function (session) {
-    session.send('Hello World');
+    session.send('Hi, my name is Chati');
 });
 
 // HTTP endpoint functions
