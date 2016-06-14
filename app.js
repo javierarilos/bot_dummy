@@ -1,21 +1,9 @@
 var restify = require('restify');
-var builder = require('botbuilder');
 
+var bot = require('./bot');
 // Create bot and add dialogs
-function getBot() {
-  if (process.env.BOT_STDIN === 'true') { // Testing chat in console
-    return new builder.TextBot();
-  } else {                                // Serve chat over HTTP
-    return new builder.BotConnectorBot({ appId: 'YourAppId', appSecret: 'YourAppSecret' });
-  }
-}
-
-var bot = getBot();
-
-bot.add('/', function (session) {
-    session.send('Hi, my name is Chati');
-});
-
+var chati = bot.getBot();
+bot.init(chati);
 // HTTP endpoint functions
 function getChatPage(req, res, next) {
   res.setHeader('Content-Type', 'text/html');
@@ -23,7 +11,7 @@ function getChatPage(req, res, next) {
   res.end("<html><title>x</title><iframe  width='500' height='400' src='https://webchat.botframework.com/embed/AAAA-ZZZZ-1111-9999-bbbb-yyyy-2222-7777?s=mb5BZTQ1sSI.cwA.1L8.eAP0nXGGFc4IuY6Uvr_U1Dotyiju7p2u5LrTLeeZzOw'></iframe></html>");
   next();
 }
-builder
+
 function getHealth(req, res, next) {
   res.send('health OK.');
   next();
@@ -55,12 +43,12 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 3000
 var ip = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
 
 if (process.env.BOT_STDIN === 'true') { // Testing chat in console
-  bot.listenStdin();
+  chati.listenStdin();
 } else {                                // Serve chat over HTTP
   // Setup Restify Server
   var server = restify.createServer();
   server.get('/', getChatPage);
-  server.post('/api/messages', bot.verifyBotFramework(), bot.listen());
+  server.post('/api/messages', chati.verifyBotFramework(), chati.listen());
   server.get('/health', getHealth);
 
   server.listen(port, ip, function () {
