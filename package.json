@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "Sample BOT application with Node, MS Bot Framework and Openshift.",
   "private": true,
-  "main": "bot.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node bot.js",
-    "start-strict": "node --use_strict bot.js"
+    "start": "node app.js",
+    "start-strict": "node --use_strict app.js"
   },
   "author": "javierarilos",
   "license": "APACHE 2.0",
