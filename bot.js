@@ -13,7 +13,7 @@ function getBot() {
 function init(bot){
   bot.add('/', [
     function (session, args, next) {
-      if (!session.userData.name) {
+      if (!session.userData.name || !session.userData.calendarUrl) {
         session.beginDialog('/profile');
       } else {
         next();
