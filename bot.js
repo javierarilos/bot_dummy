@@ -13,14 +13,21 @@ function getBot() {
 function init(bot){
   bot.add('/', [
     function (session, args, next) {
-      if (!session.userData.name || !session.userData.calendarUrl) {
+      if (!session.userData.name) {
         session.beginDialog('/profile');
       } else {
         next();
       }
     },
+    function (session, args, next) {
+      if (!session.userData.calendarUrl) {
+        session.beginDialog('/calendarUrl');
+      } else {
+        next();
+      }
+    },
     function (session, results) {
-      session.beginDialog('/agenda')
+      session.beginDialog('/agenda');
     }
   ]);
 
@@ -30,13 +37,11 @@ function init(bot){
     },
     function (session, results, next) {
       session.userData.name = results.response;
-      // session.endDialog();
-      // session.next();
-      next()
+      session.endDialog();
     },
-  //   },]);
-  //
-  // bot.add('/cal_url', [
+  ]);
+
+  bot.add('/calendarUrl', [
     function (session) {
       builder.Prompts.text(session, 'Hi! '+session.userData.name+', give me access to your calendar. Write your calendar URL.');
     },
