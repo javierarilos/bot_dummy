@@ -1,4 +1,5 @@
 var builder = require('botbuilder');
+var chrono = require('chrono-node')
 
 // Bot Factory function.
 function getBot() {
@@ -61,8 +62,12 @@ function init(bot){
         console.log('====', args)
         console.log('================================')
         // var datetime = builder.EntityRecognizer.findEntity(args.entities, 'datetime');
-        var datetime = builder.EntityRecognizer.resolveTime(args.entities);
-        console.log('******* parsed datetime:', datetime)
+        var datetime = args.entities.filter(function(el){
+          return el.type === 'builtin.datetime.date'
+        })[0].entity || 'today';
+        console.log('******* luis extracted datetime:', datetime)
+        datetime = chrono.parse(datetime)[0].start.date()
+        console.log('******* chronos parsed datetime:', datetime)
         if (!datetime) {
             builder.Prompts.text(session, "I think I don't understand... what day's agenda do you want to see?");
         } else {

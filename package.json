@@ -12,9 +12,9 @@
   "license": "APACHE 2.0",
   "dependencies": {
     "botbuilder": "^1.0.1",
+    "chrono-node": "^1.2.3",
     "restify": "^4.1.0"
   },
   "devDependencies": {},
-  "bundleDependencies": [],
-  "private": true
+  "bundleDependencies": []
 }
