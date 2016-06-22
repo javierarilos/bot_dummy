@@ -51,16 +51,22 @@ function init(bot){
     }
   ]);
 
-  var LUIS_URL = 'https://api.projectoxford.ai/luis/v1/application?id=85f7ae76-c768-4f0e-a1dd-f37d955ecc86&subscription-key=ca18b6de51b947af8869aa4b404160a1'
+  // spanish LUIS app var LUIS_URL = 'https://api.projectoxford.ai/luis/v1/application?id=85f7ae76-c768-4f0e-a1dd-f37d955ecc86&subscription-key=ca18b6de51b947af8869aa4b404160a1'
+  var LUIS_URL = 'https://api.projectoxford.ai/luis/v1/application?id=ec0f9635-a355-42ea-ba13-905d3f72af27&subscription-key=ca18b6de51b947af8869aa4b404160a1'
   var agendaDialog = new builder.LuisDialog(LUIS_URL);
   agendaDialog.setThreshold(0.6);  // Minimum utterance confidence to match a Dialog
-  agendaDialog.on('list_agenda', [
+  agendaDialog.on('agenda_query', [
     function (session, args, next) {
-        var from_date = builder.EntityRecognizer.findEntity(args.entities, 'from_date');
-        if (!from_date) {
+        console.log('================================')
+        console.log('====', args)
+        console.log('================================')
+        // var datetime = builder.EntityRecognizer.findEntity(args.entities, 'datetime');
+        var datetime = builder.EntityRecognizer.resolveTime(args.entities);
+        console.log('******* parsed datetime:', datetime)
+        if (!datetime) {
             builder.Prompts.text(session, "I think I don't understand... what day's agenda do you want to see?");
         } else {
-            next({ response: from_date.entity });
+            next({ response: datetime });
         }
     },
     function (session, results) {
