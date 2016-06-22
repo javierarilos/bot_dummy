@@ -33,7 +33,7 @@ function init(bot){
 
   bot.add('/profile', [
     function (session) {
-      builder.Prompts.text(session, 'Hola, soy ChatI, como te llamas?');
+      builder.Prompts.text(session, "Hi, I'm ChatI, what's your name?");
     },
     function (session, results, next) {
       session.userData.name = results.response;
@@ -43,7 +43,7 @@ function init(bot){
 
   bot.add('/calendarUrl', [
     function (session) {
-      builder.Prompts.text(session, 'Hola, '+session.userData.name+', Puedo ayudarte con tu calendario,\npodrías darme la URL de tu calendario?');
+      builder.Prompts.text(session, 'Hi, '+session.userData.name+', I can help you with your calendar and agenda,\nCan you, please, give your calendar URL?');
     },
     function (session, results, next) {
       session.userData.calendarUrl = results.response;
@@ -54,29 +54,28 @@ function init(bot){
   var LUIS_URL = 'https://api.projectoxford.ai/luis/v1/application?id=85f7ae76-c768-4f0e-a1dd-f37d955ecc86&subscription-key=ca18b6de51b947af8869aa4b404160a1'
   var agendaDialog = new builder.LuisDialog(LUIS_URL);
   agendaDialog.setThreshold(0.6);  // Minimum utterance confidence to match a Dialog
-  // agendaDialog.on('list_agenda', builder.DialogAction.send('=== Para hoy:\n\t(8:00) comprar el pan \n\t(10:00) salir a correr \n\t(17:00) recoger a las niñas'));
   agendaDialog.on('list_agenda', [
     function (session, args, next) {
         var from_date = builder.EntityRecognizer.findEntity(args.entities, 'from_date');
         if (!from_date) {
-            builder.Prompts.text(session, "No estoy segura de entenderte bien... De cuando quieres ver tu agenda?");
+            builder.Prompts.text(session, "I think I don't understand... what day's agenda do you want to see?");
         } else {
             next({ response: from_date.entity });
         }
     },
     function (session, results) {
         if (results.response) {
-            session.send("Ok... tu quieres tu agenda para '%s'.", results.response);
+            session.send("Ok... here it's your agenda for '%s'.\n\t(8:00) go running\n\t(9:00) breakfast\n\t(11:00) project meeting\n\t(13:30) lunch with Kent", results.response);
         } else {
-            session.send("Ok");
+            session.send("Ok... what should I say... ;)");
         }
     }
   ]);
-  agendaDialog.on('help', builder.DialogAction.send('Soy tu gestor de agenda, símplemente dime qué eventos quieres consultar.'));
+  agendaDialog.on('help', builder.DialogAction.send("I can help you query your agenda...\njust try something like: 'what is my agenda for wednesday?'"));
   agendaDialog.onBegin(function(session){
-    session.send('Estupendo, %s ahora te puedo ayudar a consultar tu agenda y taeas... :)', session.userData.name);
+    session.send("Good, %s now I can help you query your agenda... if you need more info, ask for 'help' :)", session.userData.name);
   });
-  agendaDialog.onDefault(builder.DialogAction.send("Lo siento, no te entiendo... Todavía estoy aprendiendo ;) Yo puedo consultar tu agenda y tareas.\n¿Podrías repetir la pregunta de otra manera?"));
+  agendaDialog.onDefault(builder.DialogAction.send("I think I don't understand... I am still learning...\nCan you try again? If you need some context, just ask for 'help' :)"));
 
   bot.add('/agenda', agendaDialog)
 }
