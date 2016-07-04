@@ -13,6 +13,8 @@
   "dependencies": {
     "botbuilder": "^1.0.1",
     "chrono-node": "^1.2.3",
+    "google-auth-library": "^0.9.8",
+    "googleapis": "^9.0.0",
     "restify": "^4.1.0"
   },
   "devDependencies": {},
