@@ -49,29 +49,40 @@ function authorize(credentials, callback) {
  * @param {getEventsCallback} callback The callback to call with the authorized
  *     client.
  */
-function getNewToken(oauth2Client, callback) {
-  var authUrl = oauth2Client.generateAuthUrl({
+
+function getAuthUrl(oauth2Client) {
+  return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES
   });
-  console.log('Authorize this app by visiting this url: ', authUrl);
+}
+
+function getToken(oauth2Client, code, callback) {
+  oauth2Client.getToken(code, function(err, token) {
+    if (err) {
+      console.log('Error while trying to retrieve access token', err);
+      callback(err, null);
+    }
+    oauth2Client.credentials = token;
+    storeToken(token);
+    callback(null, oauth2Client);
+  });
+}
+
+function getNewToken(oauth2Client, callback) {
+  var authUrl = getAuthUrl(oauth2Client);
+  console.log('$> Authorize this app by visiting this url: ', authUrl);
   var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
-  rl.question('Enter the code from that page here: ', function(code) {
+  rl.question('$> Enter the code from that page here: ', function(code) {
     rl.close();
-    oauth2Client.getToken(code, function(err, token) {
-      if (err) {
-        console.log('Error while trying to retrieve access token', err);
-        return;
-      }
-      oauth2Client.credentials = token;
-      storeToken(token);
-      callback(oauth2Client);
-    });
+    getToken(oauth2Client, code, callback);
   });
 }
+
+
 
 /**
  * Store token to disk be used in later program executions.
@@ -86,8 +97,8 @@ function storeToken(token) {
       throw err;
     }
   }
-  fs.writeFile(TOKEN_PATH, JSON.stringify(token));
-  console.log('Token stored to ' + TOKEN_PATH);
+  fs.writeFileSync(TOKEN_PATH, JSON.stringify(token));
+  console.log('- Token stored to ' + TOKEN_PATH);
 }
 
 /**
@@ -95,7 +106,7 @@ function storeToken(token) {
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listEvents(aDate, callback, auth) {
+function listEvents(aDate, auth, callback) {
   aDate = aDate || new Date();
   var calendar = google.calendar('v3');
   calendar.events.list({
@@ -108,7 +119,7 @@ function listEvents(aDate, callback, auth) {
     orderBy: 'startTime'
   }, function(err, response) {
     if (err) {
-      console.log('The API returned an error: ' + err);
+      console.log('- The API returned an error: ' + err);
       callback(err);
     }
     var events = response.items;
@@ -120,21 +131,6 @@ function getEvents(oneDate, callback){
   listOneDateEvents = listEvents.bind(undefined, oneDate, callback);
   authorize(appSecret, listOneDateEvents);
 }
-
-// console.log("====== static call to getEvents");
-// getEvents(new Date(), function(err, events){
-//   if (events.length == 0) {
-//     console.log('No upcoming events found.');
-//   } else {
-//     console.log('Upcoming 10 events:');
-//     for (var i = 0; i < events.length; i++) {
-//       var event = events[i];
-//       var start = event.start.dateTime || event.start.date;
-//       console.log('%s - %s', start, event.summary);
-//     }
-//   }
-//   console.log("====== DONE. static call to getEvents");
-// })
 
 function getOauth2Client(credentials) {
   var clientSecret = credentials.installed.client_secret;
@@ -149,9 +145,24 @@ function getExistingToken(callback) {
     if (err) {
       callback(err);
     } else {
-      callback(null, JSON.parse(tokenStr));
+      token = JSON.parse(tokenStr);
+      callback(null, token);
     }
   });
+}
+
+function handleEvents(err, events){
+  if (events.length == 0) {
+    console.log('&> No upcoming events found.');
+  } else {
+    console.log('&> Upcoming 10 events:');
+    for (var i = 0; i < events.length; i++) {
+      var event = events[i];
+      var start = event.start.dateTime || event.start.date;
+      console.log('\t(%s) -> %s', start, event.summary);
+    }
+    console.log('&> -------------------');
+  }
 }
 
 function refactoredGet() {
@@ -159,26 +170,17 @@ function refactoredGet() {
 
   getExistingToken(function (err, token){
     if (err) {
-      console.log('Token DID not exist. EXIT.');
-      process.exit(1);
-      getNewToken(oauth2Client, "THIS, STILL IS NOT CALLED.")
+      console.log('+ Token DID not exist... getting it.');
+      getNewToken(oauth2Client, function(err, oauth2Client) {
+        listEvents(new Date(), oauth2Client, handleEvents);
+      })
+      return;
     }
 
     console.log('=> got token:', token);
     oauth2Client.credentials = token;
-    function f (err, events){
-      if (events.length == 0) {
-        console.log('No upcoming events found.');
-      } else {
-        console.log('Upcoming 10 events:');
-        for (var i = 0; i < events.length; i++) {
-          var event = events[i];
-          var start = event.start.dateTime || event.start.date;
-          console.log('%s - %s', start, event.summary);
-        }
-      }
-    }
-    listEvents(new Date(), f, oauth2Client);
+
+    listEvents(new Date(), oauth2Client, handleEvents);
   })
 
 }
