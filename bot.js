@@ -83,11 +83,11 @@ function init(bot){
             if (events == undefined || events.length === 0) {
               session.send('No upcoming events found for: %s.', queryDate);
             } else {
-              response = 'Your events list for ' + queryDate + ' are:\n';
+              response = 'Your events list for ' + queryDate + ' are:\n\n';
               for (var i = 0; i < events.length; i++) {
                 var event = events[i];
                 var start = event.start.dateTime || event.start.date;
-                response += util.format('\t(%s) -> %s\n', start, event.summary);
+                response += util.format('\t(%s) -> %s\n\n', start, event.summary);
               }
               session.send(response);
             }
