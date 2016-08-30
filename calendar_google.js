@@ -209,8 +209,30 @@ function refactoredGet() {
 
 }
 
-refactoredGet();
+function getDayEvents(aDate, callback) {
+  oauth2Client = getOauth2Client(appSecret);
+
+  aDate = aDate || new Date();
+
+  getExistingToken(function (err, token){
+    if (err) {
+      console.log('+ Token DID not exist... getting it.');
+      getNewToken(oauth2Client, function(err, oauth2Client) {
+        listDayEvents(aDate, oauth2Client, callback);
+      })
+      return;
+    }
+
+    console.log('=> got token:', token);
+    oauth2Client.credentials = token;
+
+    listDayEvents(aDate, oauth2Client, callback);
+  })
+
+}
+
 
 module.exports.getEvents = getEvents;
+module.exports.getDayEvents = getDayEvents;
 module.exports.getExistingToken = getExistingToken;
 //module.exports.getNewToken = getNewToken;

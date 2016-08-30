@@ -1,5 +1,7 @@
 var builder = require('botbuilder');
-var chrono = require('chrono-node')
+var chrono = require('chrono-node');
+var calendar_google = require('./calendar_google');
+var util = require('util');
 
 // Bot Factory function.
 function getBot() {
@@ -76,7 +78,21 @@ function init(bot){
     },
     function (session, results) {
         if (results.response) {
-            session.send("Ok... here it's your agenda for '%s'.\n\t(8:00) go running\n\t(9:00) breakfast\n\t(11:00) project meeting\n\t(13:30) lunch with Kent", results.response);
+          var queryDate = results.response;
+          function handleEvents(err, events){
+            if (events == undefined || events.length === 0) {
+              session.send('No upcoming events found for: %s.', queryDate);
+            } else {
+              response = 'Your events list for ' + queryDate + ' are:\n';
+              for (var i = 0; i < events.length; i++) {
+                var event = events[i];
+                var start = event.start.dateTime || event.start.date;
+                response += util.format('\t(%s) -> %s\n', start, event.summary);
+              }
+              session.send(response);
+            }
+          }
+          calendar_google.getDayEvents(queryDate, handleEvents)
         } else {
             session.send("Ok... what should I say... ;)");
         }
