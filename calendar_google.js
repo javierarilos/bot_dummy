@@ -127,6 +127,30 @@ function listEvents(aDate, auth, callback) {
   });
 }
 
+function listDayEvents(aDate, auth, callback) {
+  aDate = aDate || new Date(2016, 08, 31);
+  var timeMin = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate(), 0, 0, 0, 0)
+  var timeMax = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate() + 1, 0, 0, 0, 0)
+  var calendar = google.calendar('v3');
+  calendar.events.list({
+    auth: auth,
+    // calendarId: 'primary',
+    calendarId: 'akjarb6e6vsc2jktdq39acdk3k@group.calendar.google.com',
+    timeMin: timeMin.toISOString(),
+    timeMax: timeMax.toISOString(),
+    maxResults: 10,
+    singleEvents: true,
+    orderBy: 'startTime'
+  }, function(err, response) {
+    if (err) {
+      console.log('- The API returned an error: ' + err);
+      callback(err);
+    }
+    var events = (response && response.items) || undefined;
+    callback(undefined, events);
+  });
+}
+
 function getEvents(oneDate, callback){
   listOneDateEvents = listEvents.bind(undefined, oneDate, callback);
   authorize(appSecret, listOneDateEvents);
@@ -152,7 +176,7 @@ function getExistingToken(callback) {
 }
 
 function handleEvents(err, events){
-  if (events.length == 0) {
+  if (events == undefined || events.length === 0) {
     console.log('&> No upcoming events found.');
   } else {
     console.log('&> Upcoming 10 events:');
